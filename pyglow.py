@@ -57,15 +57,13 @@ class PyGlow:
         self.write_i2c(CMD_UPDATE, 0xFF)
 
     def all_off(self):
-        v = [0x00 for x in range(18)]
-        self.update_leds(v)
+        self.update_leds([0x00 for x in range(18)])
 
     def light(self, leds, intensity=0x50):
         if not isinstance(leds, list):
             leds = [leds]
-        v = [intensity if x in leds else 0x00 for x in range(18)]
-        self.current = v
-        self.update_leds(v)
+        self.current = [intensity if x in leds else 0x00 for x in range(18)]
+        self.update_leds(self.current)
 
 if __name__ == '__main__':
     try:
