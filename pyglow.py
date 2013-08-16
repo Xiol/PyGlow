@@ -41,7 +41,7 @@ ARM_3 = [RED_3,ORANGE_3,YELLOW_3,GREEN_3,BLUE_3,WHITE_3]
 class PyGlow:
     def __init__(self, i2c_bus=1):
         self.bus = SMBus(i2c_bus)
-        self.current = [0x00 for x in range(18)]
+        self.current = self._zerolist()
 
     def init(self):
         self.write_i2c(CMD_ENABLE_OUTPUT, 0x01)
@@ -57,13 +57,17 @@ class PyGlow:
         self.write_i2c(CMD_UPDATE, 0xFF)
 
     def all_off(self):
-        self.update_leds([0x00 for x in range(18)])
+        self.current = self._zerolist()
+        self.update_leds(self.current)
 
     def light(self, leds, intensity=0x50):
         if not isinstance(leds, list):
             leds = [leds]
         self.current = [intensity if x in leds else 0x00 for x in range(18)]
         self.update_leds(self.current)
+
+    def _zerolist(self):
+        return [0x00 for x in range(18)]
 
 if __name__ == '__main__':
     try:
