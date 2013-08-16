@@ -20,6 +20,6 @@ See the bottom of `pyglow.py` for a usage example, but basically:
     time.sleep(2)
     p.all_off()
 
-`pyglow.py` contains other constants you can use to light up individual LEDs, rings of LEDs or an arm of the spiral. `.light()` takes a secondary argument for the intensity of the, e.g.
+`pyglow.py` contains other constants you can use to light up individual LEDs, rings of LEDs or an arm of the spiral. `.light()` takes a secondary argument for the intensity of the LED, e.g.
 
-   p.light(pyglow.RING_GREEN, 0xFF)  # Light up green ring at full brightness
+    p.light(pyglow.RING_GREEN, 0xFF)  # Light up green ring at full brightness
