@@ -38,6 +38,9 @@ ARM_1 = [RED_1,ORANGE_1,YELLOW_1,GREEN_1,BLUE_1,WHITE_1]
 ARM_2 = [RED_2,ORANGE_2,YELLOW_2,GREEN_2,BLUE_2,WHITE_2]
 ARM_3 = [RED_3,ORANGE_3,YELLOW_3,GREEN_3,BLUE_3,WHITE_3]
 
+DEFAULT_FADE_SPEED = 0.02
+DEFAULT_INTENSITY = 0x50
+
 class PyGlow:
     def __init__(self, i2c_bus=1):
         self.bus = SMBus(i2c_bus)
@@ -60,11 +63,30 @@ class PyGlow:
         self.current = self._zerolist()
         self.update_leds(self.current)
 
-    def light(self, leds, intensity=0x50):
+    def light(self, leds, intensity=DEFAULT_INTENSITY):
         if not isinstance(leds, list):
             leds = [leds]
         self.current = [intensity if x in leds else 0x00 for x in range(18)]
         self.update_leds(self.current)
+
+    def fade_in(self, leds, intensity=DEFAULT_INTENSITY, speed=DEFAULT_FADE_SPEED):
+        cur_inten = 0x00
+        while cur_inten < intensity:
+            self.light(leds, cur_inten)
+            cur_inten += 0x05
+            if cur_inten > 0xFF:
+                self.light(leds, 0xFF)
+                break
+            time.sleep(speed)
+
+    def fade_out(self, leds, intensity=DEFAULT_INTENSITY, speed=DEFAULT_FADE_SPEED):
+        while intensity > 0x00:
+            self.light(leds, intensity)
+            intensity -= 0x05
+            if intensity < 0x00:
+                self.light(leds, 0x00)
+                break
+            time.sleep(speed)
 
     def _zerolist(self):
         return [0x00 for x in range(18)]
@@ -73,18 +95,24 @@ if __name__ == '__main__':
     try:
         p = PyGlow()
         p.init()
-        p.light(BLUE_1)
+        p.fade_in(GREEN_1, 0x80, 0.01)
         time.sleep(1)
+        p.fade_out(GREEN_1, 0x80, 0.01)
         p.light(ARM_1)
+        time.sleep(0.3)
+        p.light(ARM_1 + ARM_2)
+        time.sleep(0.3)
+        p.light(ARM_1 + ARM_2 + ARM_3)
         time.sleep(1)
-        p.light(RING_RED, 0xFF)
-        time.sleep(0.4)
-        p.light(RING_ORANGE, 0x80)
-        time.sleep(0.4)
-        p.light(RING_YELLOW, 0x40)
-        time.sleep(0.4)
-        p.light(RING_GREEN, 0x10)
-        time.sleep(1)
+        p.all_off()
+        p.fade_in(RING_RED, 0xFF)
+        p.fade_out(RING_RED, 0xFF)
+        p.fade_in(RING_ORANGE, 0xFF)
+        p.fade_out(RING_ORANGE, 0xFF)
+        p.fade_in(RING_YELLOW, 0xFF)
+        p.fade_out(RING_YELLOW, 0xFF)
+        p.fade_in(RING_GREEN, 0xFF)
+        p.fade_out(RING_GREEN, 0xFF)
         p.all_off()
     except KeyboardInterrupt:
         p.all_off()
