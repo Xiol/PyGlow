@@ -74,8 +74,7 @@ class PyGlow:
         while cur_inten < intensity:
             self.light(leds, cur_inten)
             cur_inten += 0x05
-            if cur_inten > 0xFF:
-                self.light(leds, 0xFF)
+            if cur_inten >= 0xFF:
                 break
             time.sleep(speed)
 
@@ -83,9 +82,23 @@ class PyGlow:
         while intensity > 0x00:
             self.light(leds, intensity)
             intensity -= 0x05
-            if intensity < 0x00:
-                self.light(leds, 0x00)
+            if intensity <= 0x00:
                 break
+            time.sleep(speed)
+
+    def crossfade(self, leds_start, leds_end, intensity=DEFAULT_INTENSITY,
+                     speed=DEFAULT_FADE_SPEED):
+        cur_inten_up = 0x00
+        cur_inten_down = intensity
+        while cur_inten_up < intensity:
+            cur_inten_down -= 0x05
+            cur_inten_up += 0x05
+            if cur_inten_down <= 0x00:
+                break
+            if cur_inten_up >= 0xFF:
+                break
+            self.light(leds_start, cur_inten_down)
+            self.light(leds_end, cur_inten_up)
             time.sleep(speed)
 
     def _zerolist(self):
@@ -106,12 +119,9 @@ if __name__ == '__main__':
         time.sleep(1)
         p.all_off()
         p.fade_in(RING_RED, 0xFF)
-        p.fade_out(RING_RED, 0xFF)
-        p.fade_in(RING_ORANGE, 0xFF)
-        p.fade_out(RING_ORANGE, 0xFF)
-        p.fade_in(RING_YELLOW, 0xFF)
-        p.fade_out(RING_YELLOW, 0xFF)
-        p.fade_in(RING_GREEN, 0xFF)
+        p.crossfade(RING_RED, RING_ORANGE, 0xFF)
+        p.crossfade(RING_ORANGE, RING_YELLOW, 0xFF)
+        p.crossfade(RING_YELLOW, RING_GREEN, 0xFF)
         p.fade_out(RING_GREEN, 0xFF)
         p.all_off()
     except KeyboardInterrupt:
