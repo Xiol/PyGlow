@@ -39,6 +39,7 @@ ARM_2 = [RED_2,ORANGE_2,YELLOW_2,GREEN_2,BLUE_2,WHITE_2]
 ARM_3 = [RED_3,ORANGE_3,YELLOW_3,GREEN_3,BLUE_3,WHITE_3]
 
 DEFAULT_FADE_SPEED = 0.02
+DEFAULT_FADE_STEP = 0x05
 DEFAULT_INTENSITY = 0x50
 
 class PyGlow:
@@ -69,30 +70,32 @@ class PyGlow:
         self.current = [intensity if x in leds else 0x00 for x in range(18)]
         self.update_leds(self.current)
 
-    def fade_in(self, leds, intensity=DEFAULT_INTENSITY, speed=DEFAULT_FADE_SPEED):
+    def fade_in(self, leds, intensity=DEFAULT_INTENSITY,
+                speed=DEFAULT_FADE_SPEED, step=DEFAULT_FADE_STEP):
         cur_inten = 0x00
         while cur_inten < intensity:
             self.light(leds, cur_inten)
-            cur_inten += 0x05
+            cur_inten += step
             if cur_inten >= 0xFF:
                 break
             time.sleep(speed)
 
-    def fade_out(self, leds, intensity=DEFAULT_INTENSITY, speed=DEFAULT_FADE_SPEED):
+    def fade_out(self, leds, intensity=DEFAULT_INTENSITY,
+                 speed=DEFAULT_FADE_SPEED, step=DEFAULT_FADE_STEP):
         while intensity > 0x00:
             self.light(leds, intensity)
-            intensity -= 0x05
+            intensity -= step
             if intensity <= 0x00:
                 break
             time.sleep(speed)
 
     def crossfade(self, leds_start, leds_end, intensity=DEFAULT_INTENSITY,
-                     speed=DEFAULT_FADE_SPEED):
+                     speed=DEFAULT_FADE_SPEED, step=DEFAULT_FADE_STEP):
         cur_inten_up = 0x00
         cur_inten_down = intensity
         while cur_inten_up < intensity:
-            cur_inten_down -= 0x05
-            cur_inten_up += 0x05
+            cur_inten_down -= step
+            cur_inten_up += step
             if cur_inten_down <= 0x00:
                 break
             if cur_inten_up >= 0xFF:
