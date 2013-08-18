@@ -105,6 +105,7 @@ class PyGlow:
             self.light(leds, intensity)
             intensity -= step
             if intensity < 0x00:
+                self.turn_off(leds)
                 break
             time.sleep(speed)
 
@@ -154,13 +155,14 @@ if __name__ == '__main__':
         p.light(ARM_3)
         time.sleep(1)
         p.all_off()
-        p.fade_in(RING_RED, 0xFF)
+        p.fade_in(RING_RED, 0x80)
         p.crossfade(RING_RED, RING_ORANGE, 0x80)
         p.crossfade(RING_ORANGE, RING_YELLOW, 0x80)
         p.crossfade(RING_YELLOW, RING_GREEN, 0x80)
         p.crossfade(RING_GREEN, RING_BLUE, 0x80)
         p.crossfade(RING_BLUE, RING_WHITE, 0x80)
-        p.fade_out(RING_WHITE, 0xFF)
+        p.fade_out(RING_WHITE, 0x80)
+        time.sleep(1)
         p.light(RING_GREEN, 0XFF)
         time.sleep(2)
         p.crossfade(RING_GREEN, RING_YELLOW, 0xFF, 0.005)
