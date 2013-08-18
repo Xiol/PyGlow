@@ -18,7 +18,7 @@ See the bottom of `pyglow.py` for a usage example, but basically:
 
     p = PyGlow()   # Pass 0 if you have an old RPi
     p.init()
-    p.light(RM_1)
+    p.light(ARM_1)
     time.sleep(0.3)
     p.light(ARM_1 + ARM_2)
     time.sleep(0.3)
